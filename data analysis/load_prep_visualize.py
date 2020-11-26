@@ -6,33 +6,19 @@ import matplotlib.pyplot as plt
 
 # Loading csv in dataframe and assign column names
 df = pandas.read_csv(
-    'data\BTCUSDT.csv', 
-    names = [
-        'Open time', 
-        'Open', 
-        'High', 
-        'Low', 
-        'Close', 
-        'Volume', 
-        'Close time', 
-        'Quote asset volume', 
-        'Number of trades', 
-        'Taker BUY base asset volume', 
-        'Taker BUY quote asset volume', 
-        'Ignore'
-    ]
+    'data\XRPUSDT.csv'
 )
 
 # Index creation
 df.index = pandas.to_datetime(
-    df['Open time'], 
+    df['Datetime'], 
     unit='s'
 )
 
 # Cleaning dataframe
 df = df.drop(
     columns = [
-        'Open time',
+        'Datetime',
         'Close time',
         'Quote asset volume', 
         'Taker BUY base asset volume', 
