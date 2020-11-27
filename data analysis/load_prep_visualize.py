@@ -4,9 +4,11 @@
 import pandas
 import matplotlib.pyplot as plt
 
+symbol = 'XRPUSDT'
+
 # Loading csv in dataframe and assign column names
 df = pandas.read_csv(
-    'data\XRPUSDT.csv'
+    'data\{}.csv'.format(symbol)
 )
 
 # Index creation
@@ -31,4 +33,5 @@ print(df.head())
 
 # Data visualization
 df.plot(y=['Close'])
+plt.title(symbol)
 plt.show()
