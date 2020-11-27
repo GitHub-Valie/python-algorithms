@@ -1,7 +1,7 @@
 import backtrader as bt
 import backtrader.feeds as btfeeds
 import pandas as pd
-from strategies import Basic_RSI
+from strategies import Basic_RSI, BuyAndHold_Target
 
 start_cash = 10000
 
@@ -20,9 +20,9 @@ data = btfeeds.PandasData(dataname=df)
 
 cerebro.adddata(data)
 
-cerebro.addstrategy(Basic_RSI)
-
 cerebro.broker.set_cash(start_cash)
+
+cerebro.addstrategy(BuyAndHold_Target)
 
 print(
     'Start:   $ {}'.format(
