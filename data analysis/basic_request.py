@@ -1,5 +1,3 @@
-# This program sends a request to Binance servers and prints the server time in datetime format
-
 import requests
 from datetime import datetime
 

@@ -1,6 +1,3 @@
-# This program loads a csv file, prepares the data and plots it
-# for visualization
-
 import pandas
 import matplotlib.pyplot as plt
 

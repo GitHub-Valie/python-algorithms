@@ -1,6 +1,3 @@
-# This program sends a request to the Binance servers and stores 
-# the requested json data in a csv file
-
 import requests
 from pprint import pprint
 import csv
