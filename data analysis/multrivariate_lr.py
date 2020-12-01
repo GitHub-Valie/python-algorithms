@@ -56,8 +56,7 @@ df.columns = pd.MultiIndex.from_product(
 )
 
 
-
-# Multivariate Linear Regression
+# Prepare data
 
 btcusdt = df['BTCUSDT']
 ethusdt = df['ETHUSDT']
@@ -104,3 +103,17 @@ df = pd.concat(
     ],
     axis=1
 )
+
+
+# Data exploration
+
+corr = df.corr() # Correlation
+
+print(corr)
+
+sns.heatmap(
+    data=corr,
+    annot=True,
+    cmap='RdBu'
+)
+plt.show() # Visualize corr coefs
