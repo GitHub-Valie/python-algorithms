@@ -6,7 +6,15 @@ import websocket
 from algorithm import Algorithm
 from portfolio import portfolio
 
-# TODO: Create an algorithm that takes decisions in real time
+# TODO: 
+# DONE: A portfolio of multiple currencies (portfolio.py)
+# DONE: Historical and live data requesting (main.py : WebSocketApp)
+# Decision tree based on a basket technical indicators
+# Technical Indicators
+# Basket
+# Decision tree
+# Summary/performance tracking: define variables (pnl, counters, buysell, profit, winrate, ...)
+# Portfolio rebalancing
 
 BASE_URL = "wss://fstream3.binance.com/stream?streams="
 
@@ -14,11 +22,13 @@ BASE_URL = "wss://fstream3.binance.com/stream?streams="
 algorithms = []
 for cryptocurrency in portfolio:
     algorithms.append(cryptocurrency)
+    # Create one instance of "Algorithm" for each cryptocurrency in portfolio
     algorithms[-1]['algorithm'] = Algorithm(
         cryptocurrency['Asset'],
-        cryptocurrency['Weight']
+        cryptocurrency['Weight'],
+        cryptocurrency['Period']
     )
-    BASE_URL += cryptocurrency['Asset'].lower() + "@kline_1m/"
+    BASE_URL += cryptocurrency['Asset'].lower() + "@kline_1h/"
 
 # Connect to websocket
 def on_open(ws):
@@ -30,9 +40,11 @@ def on_close(ws):
 def on_message(ws, message):
     message = json.loads(message)
     data = message['data']['k']
-    for algorithm in algorithms:
-        if algorithm['Asset'] == data['s']:
-            algorithm['algorithm']
+    # pprint(data)
+    for instance in algorithms:
+        if instance['Asset'] == data['s']:
+            instance['algorithm'].next(data)
+            break
 
 while True:
     ws = websocket.WebSocketApp(
@@ -70,25 +82,4 @@ while True:
 #                 'x': False}, # Is candle closed?
 #           's': 'BTCUSDT'},
 #  'stream': 'btcusdt@kline_1m'}
-# {'data': {'E': 1606844798702,
-#           'e': 'kline',
-#           'k': {'B': '0',
-#                 'L': 169545179,
-#                 'Q': '465748.74867',
-#                 'T': 1606844819999,
-#                 'V': '789.745',
-#                 'c': '589.82',
-#                 'f': 169544357,
-#                 'h': '590.71',
-#                 'i': '1m',
-#                 'l': '588.78',
-#                 'n': 823,
-#                 'o': '590.66',
-#                 'q': '1363040.45299',
-#                 's': 'ETHUSDT',
-#                 't': 1606844760000,
-#                 'v': '2311.180',
-#                 'x': False},
-#           's': 'ETHUSDT'},
-#  'stream': 'ethusdt@kline_1m'}
       
