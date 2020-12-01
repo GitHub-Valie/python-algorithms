@@ -40,41 +40,14 @@ df['sma_10'] = btalib.sma(
 
 df = df.iloc[10:]
 
-# Strategy1: if sma_5 is over sma_10: BUY
-# if sma_5 is under sma_10: SELL
-
 n = 0
 
-# while n < len(df):
-#     if df.iloc[n, 6] > df.iloc[n, 7]: # if sma_5 > sma_10
-#         print(
-#             df.index[n],
-#             ': FAST > SLOW / BUY! ', 
-#             round(df.iloc[n, 6]), 
-#             ' > ', 
-#             round(df.iloc[n, 7])
-#         )
-#     else: # sma_5 < sma_10
-#         print(
-#             df.index[n],
-#             ': FAST < SLOW / SELL! ',
-#             round(df.iloc[n, 6]),
-#             ' < ',
-#             round(df.iloc[n, 7])
-#         )
-    
-#     n = n + 1
+# Strategy: If sma-5 CROSSES OVER sma-10: Buy / vice-versa
 
-# TODO: Strategy 2: If sma-5 CROSSES OVER sma-10: Buy / vice-versa
-# Add position tracker (0 or 1)
-# Add profit counter
-# Add order price-tracking
-# Add PnL calculation
-
-position = 0
-profit_counter = 0
-orders = []
-pnl = []
+position = 0 # Add position tracker (0 or 1), default = 0
+profit_counter = 0 # Add profit counter
+orders = [] # Add order price-tracking
+pnl = [] # Add PnL calculation
 
 while n < len(df):
 
@@ -114,7 +87,7 @@ while n < len(df):
         orders.append(df.iloc[n, 3])
         buy_sell = True
 
-        profit = orders[-2] - orders[-1] # order[-1] sell price, order[-2] is buy price
+        profit = orders[-2] - orders[-1] # order[-1] is sell price, order[-2] is buy price
         pnl.append(profit)
 
         if profit > 0:
@@ -125,6 +98,7 @@ while n < len(df):
     
     n += 1
 
+# Summary
 print('Orders passed:   ', len(orders))
 print('Profit counter:  ', profit_counter)
 print(
