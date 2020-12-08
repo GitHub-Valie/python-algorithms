@@ -4,9 +4,8 @@
 # 3/ Process live data and perform technical analysis (sma)
 # 4/ Take action: buy, sell, hold (do nothing)
 
-import btalib, json, requests, websocket
+import json, requests, websocket
 import numpy as np
-import pandas as pd
 from pprint import pprint
 
 # Define variables
@@ -43,7 +42,7 @@ def futures_get_hist(symbol, interval):
 def sma(arr, window):
     return np.convolve(arr, np.ones(window), 'valid') / window
 
-
+# Websocket functions
 def on_open(ws):
     print("Opened Connection: ", WSS_BASE_URL + WSS_ENDPOINT)
     historical_data = futures_get_hist(
@@ -144,7 +143,7 @@ def on_message(ws, message):
         else:
             pass
 
-        
+# WebSocketApp        
 while True:
     ws = websocket.WebSocketApp(
         WSS_BASE_URL + WSS_ENDPOINT,
