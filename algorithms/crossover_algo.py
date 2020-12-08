@@ -1,5 +1,6 @@
 import pandas as pd
 import btalib
+import numpy as np
 
 symbol = 'BTCUSDT'
 
@@ -37,6 +38,12 @@ df['sma_10'] = btalib.sma(
     df.Close,
     period = 10
 ).df
+
+# arr = df['sma_10'].to_numpy()
+# print(arr)
+
+# print(df['sma_10_numpy'], df['sma_10'])
+# print('Types :', type(df['sma_10_numpy']), type(df['sma_10']))
 
 df = df.iloc[10:]
 
