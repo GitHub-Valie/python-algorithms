@@ -9,7 +9,7 @@ data = array.tolist()
 
 for x in data:
     if x > 0.5:
-        print('x > 0.5')
+        print('x: {} > 0.5'.format(round(x, 2)))
     
     else:
-        print('x < 0.5')
+        print('x: {} < 0.5'.format(round(x, 2)))
