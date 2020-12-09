@@ -107,8 +107,8 @@ def on_message(ws, message):
     )
 
     print(
-        '200 minutes SMA: ', round(sma_200[-1], 2),
-        '\nClose:           ', round(closes[-1], 2)
+        '   200 minutes SMA: {}\n'.format(round(sma_200[-1], 2)),
+        '  Close:           {}'.format(round(closes[-1], 2))
     )
 
     # Strategy: go long if SMA > last close ; go short if SMA < last close
