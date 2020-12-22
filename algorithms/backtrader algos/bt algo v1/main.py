@@ -38,7 +38,7 @@ def on_message(ws, message):
     # print(data)
     for bot in bots:
         if bot['pair'] == data['s']:
-            bot['bot'].next(data)
+            bot['bot'].get_ticks(data)
             break
 
     # Pass it through the algorithm
