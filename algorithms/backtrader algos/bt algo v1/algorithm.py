@@ -11,19 +11,12 @@ from ta.volatility import BollingerBands
 from ta.momentum import RSIIndicator
 
 # Define position, pnl and pnl_counter
-position = 0
-pnl = 0
-profit_counter = 0
 
 # Define conditions
 long_condition = True
 short_condition = False
 
 # Define lists
-open_long = []
-open_short = []
-close_long = []
-close_short = []
 
 class Algorithm:
 
@@ -31,9 +24,14 @@ class Algorithm:
         self.symbol = symbol
         self.interval = interval
         self.data = deque([], maxlen=500)
+        self.tmp = deque([], maxlen=500)
         self.position = 0
-        self.pnl = 0
+        self.pnl = []
         self.profit_counter = 0
+        self.open_long = []
+        self.open_short = []
+        self.close_long = []
+        self.close_short = []
 
         historical_data = futures_get_hist(
             symbol = symbol,
@@ -41,33 +39,29 @@ class Algorithm:
         )
 
         for candle in historical_data:
-            
             self.data.append(float(candle[4]))
-            # print(self.data[-1])
     
     def get_ticks(self, candle):
 
-        # print(close)
-
-        # Implement strategy if candle is closed
-        if candle['x'] == True:
-            self.data.pop(0)
-            self.data.append(float(candle['c']))
         
-        # Implement strategy if candle is open
-        else:
-            self.data[-1] = float(candle['c'])
-            # Dataframe transform
+        # When candle is open, append all data from self.data in tmp list and append tick data candle['c'] to tmp
+        if candle['x'] == False:
+            for close in list(self.data):
+                self.tmp.append(close)
+            self.tmp.append(float(candle['c']))
+
             df = pd.DataFrame(
-                data = list(self.data),
+                data = list(self.tmp),
                 columns = ['close']
             )
-            # Bollinger bands
+
+            # Bollinger Bands
             indicator_bb = BollingerBands(
                 close=df['close'],
                 window=20,
                 window_dev=2
             )
+
             # Relative Strength Index
             indicator_rsi = RSIIndicator(
                 close=df['close'],
@@ -78,103 +72,75 @@ class Algorithm:
             df['bb_bbh'] = indicator_bb.bollinger_hband()
             df['bb_bbl'] = indicator_bb.bollinger_lband()
             df['rsi'] = indicator_rsi.rsi()
-            # print(df.iloc[-1])
+
             price = float(df['close'].iloc[-1])
             bb_high = float(df['bb_bbh'].iloc[-1])
             bb_low = float(df['bb_bbl'].iloc[-1])
             last_rsi = float(df['rsi'].iloc[-1])
 
             # Positions
+
             if self.position == 0:
 
                 # Long condition is met
-                if price < bb_low and last_rsi < 35:
-
+                if price < bb_low or last_rsi < 30:
                     print('GO LONG')
-                    position = 1
-
-                    open_long.append(price)
+                    self.position = 1
+                    self.open_long.append(price)
 
                 # Short condition is met
-                elif price > bb_high and last_rsi > 65:
-
+                elif price > bb_high or last_rsi > 70:
                     print('GO SHORT')
-                    position = -1
-
-                    open_short.append(price)
+                    self.position = -1
+                    self.open_short.append(price)
 
                 else:
-
                     pass
 
             elif self.position == 1:
 
-                # Long condition no longer met
-                if price > bb_low and rsi > 35:
-
-                    print('CLOSE LONG')
-                    position = 0
-
-                    close_long.append(price)
-                    
-                    pnl.append(open_long[-1] - close_long[-1])
-                    profit_counter += 1
-
                 # Short condition is met
-                elif price > bb_high and last_rsi > 65:
-
+                if price > bb_high or last_rsi > 70:
                     print('CLOSE LONG AND GO SHORT')
-                    position = -1
-
-                    close_long.append(price)
-                    open_short.append(price)
-
-                    pnl.append(open_long[-1] - close_long[-1])
-                    profit_counter += 1
+                    self.position = -1
+                    self.close_long.append(price)
+                    self.open_short.append(price)
+                    self.pnl.append(open_long[-1] - close_long[-1])
+                    self.profit_counter += 1
 
                 else:
-
                     pass
 
             elif self.position == -1:
 
-                # Short condition no longer met
-                if price < bb_high and last_rsi < 65:
-
-                    print('CLOSE SHORT')
-                    position = 0
-
-                    close_short.append(price)
-
-                    pnl.append(close_short[-1] - open_short[-1])
-                    profit_counter += 1
-
                 # Long condition is met
-                elif price < bb_low and last_rsi < 35:
-
+                if price < bb_low or last_rsi < 30:
                     print('CLOSE SHORT AND GO LONG')
-                    position = 1
-
-                    close_short.append(price)
-                    open_long.append(price)
-
-                    pnl.append(close_short[-1] - open_short[-1])
-                    profit_counter += 1
+                    self.position = 1
+                    self.close_short.append(price)
+                    self.open_long.append(price)
+                    self.pnl.append(close_short[-1] - open_short[-1])
+                    self.profit_counter += 1
 
                 else:
-
                     pass
 
             else:
 
                 print('Error')
         
+        # When candle is closed, append close price to data
+        else:
+            # print('candle is closed')
+            self.data.append(float(candle['c']))
+
         print(
-            self.symbol, ': price: {} ; bb_h: {} ; bb_l: {} ; rsi: {}\nPnl: {}'.format(
+            self.symbol, ': price: {} ; bb_h: {} ; bb_l: {} ; rsi: {}\nPosition: {} ; Pnls: {}'.format(
                 round(price, 1),
                 round(bb_high, 1),
                 round(bb_low, 1),
                 round(last_rsi, 1),
-                round(pnl, 1)
+                self.position,
+                round(sum(self.pnl), 4)
             )
         )
