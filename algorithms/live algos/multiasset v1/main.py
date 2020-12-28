@@ -8,7 +8,7 @@ from pprint import pprint
 
 # Variables
 bots = []
-WSS_URL = "wss://fstream.binance.com"
+WSS_URL = "wss://fstream.binance.com/stream?streams="
 
 for asset in portfolio:
     bots.append(asset)
@@ -17,13 +17,15 @@ for asset in portfolio:
         asset['interval']
     )
 
-    WSS_ENDPOINT = "/ws/{}@kline_{}".format(
+    WSS_ENDPOINT = "{}@kline_{}/".format(
         asset['pair'].lower(),
         asset['interval']
     )
 
     WSS_URL += WSS_ENDPOINT
-    print(WSS_URL)
+
+WSS_URL = WSS_URL[:-1]
+print(WSS_URL)
 
 # Get live data: websocket app
 def on_open(ws):
@@ -34,7 +36,7 @@ def on_close(ws):
 
 def on_message(ws, message):
     json_message = json.loads(message)
-    data = json_message['k']
+    data = json_message['data']['k']
     # print(data)
     for bot in bots:
         if bot['pair'] == data['s']:

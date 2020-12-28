@@ -10,14 +10,6 @@ from ta.utils import dropna
 from ta.volatility import BollingerBands
 from ta.momentum import RSIIndicator
 
-# Define position, pnl and pnl_counter
-
-# Define conditions
-long_condition = True
-short_condition = False
-
-# Define lists
-
 class Algorithm:
 
     def __init__(self, symbol, interval):
@@ -79,17 +71,16 @@ class Algorithm:
             last_rsi = float(df['rsi'].iloc[-1])
 
             # Positions
-
             if self.position == 0:
 
                 # Long condition is met
-                if price < bb_low or last_rsi < 30:
+                if price < bb_low or last_rsi < 35:
                     print('GO LONG')
                     self.position = 1
                     self.open_long.append(price)
 
                 # Short condition is met
-                elif price > bb_high or last_rsi > 70:
+                elif price > bb_high:
                     print('GO SHORT')
                     self.position = -1
                     self.open_short.append(price)
@@ -100,12 +91,12 @@ class Algorithm:
             elif self.position == 1:
 
                 # Short condition is met
-                if price > bb_high or last_rsi > 70:
+                if price > bb_high or last_rsi > 65:
                     print('CLOSE LONG AND GO SHORT')
                     self.position = -1
                     self.close_long.append(price)
                     self.open_short.append(price)
-                    self.pnl.append(open_long[-1] - close_long[-1])
+                    self.pnl.append(self.open_long[-1] - self.close_long[-1])
                     self.profit_counter += 1
 
                 else:
@@ -114,12 +105,12 @@ class Algorithm:
             elif self.position == -1:
 
                 # Long condition is met
-                if price < bb_low or last_rsi < 30:
+                if price < bb_low or last_rsi < 35:
                     print('CLOSE SHORT AND GO LONG')
                     self.position = 1
                     self.close_short.append(price)
                     self.open_long.append(price)
-                    self.pnl.append(close_short[-1] - open_short[-1])
+                    self.pnl.append(self.close_short[-1] - self.open_short[-1])
                     self.profit_counter += 1
 
                 else:
