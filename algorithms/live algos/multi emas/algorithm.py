@@ -11,13 +11,15 @@ from ta.trend import EMAIndicator
 
 class Algorithm:
 
-    def __init__(self, symbol, interval):
+    def __init__(self, symbol, interval, weight):
         self.symbol = symbol
         self.interval = interval
+        self.weight = weight
         self.data = deque([], maxlen=500)
         self.tmp = deque([], maxlen=500)
         self.position = 0
         self.pnl = []
+        self.fees = []
         self.profit_counter = 0
         self.open_long = []
         self.open_short = []
@@ -34,7 +36,8 @@ class Algorithm:
     
     def get_ticks(self, candle):
 
-        
+        start_cash = 100
+
         # When candle is open, append all data from self.data in tmp list and append tick data candle['c'] to tmp
         if candle['x'] == False:
             for close in list(self.data):
@@ -58,18 +61,6 @@ class Algorithm:
                 df['ema_' + str(ema)] = indicator_ema.ema_indicator()
 
             price = float(df['close'].iloc[-1])
-            ema_3 = float(df['ema_3'].iloc[-1])
-            ema_5 = float(df['ema_5'].iloc[-1])
-            ema_8 = float(df['ema_8'].iloc[-1])
-            ema_10 = float(df['ema_10'].iloc[-1])
-            ema_12 = float(df['ema_12'].iloc[-1])
-            ema_15 = float(df['ema_15'].iloc[-1])
-            ema_30 = float(df['ema_30'].iloc[-1])
-            ema_35 = float(df['ema_35'].iloc[-1])
-            ema_40 = float(df['ema_40'].iloc[-1])
-            ema_45 = float(df['ema_45'].iloc[-1])
-            ema_50 = float(df['ema_50'].iloc[-1])
-            ema_60 = float(df['ema_60'].iloc[-1])
 
             for i in df.index:
                 c_min = min(
@@ -115,8 +106,8 @@ class Algorithm:
                     self.position = -1
                     self.close_long.append(price)
                     self.open_short.append(price)
+                    self.fees.append(self.close_long[-1] * 0.01)
                     self.pnl.append(self.open_long[-1] - self.close_long[-1])
-                    self.profit_counter += 1
 
                 else:
                     pass
@@ -130,7 +121,7 @@ class Algorithm:
                     self.close_short.append(price)
                     self.open_long.append(price)
                     self.pnl.append(self.close_short[-1] - self.open_short[-1])
-                    self.profit_counter += 1
+                    self.fees.append(self.close_short[-1] * 0.01)
 
                 else:
                     pass
@@ -144,11 +135,12 @@ class Algorithm:
             self.data.append(float(candle['c']))
 
         print(
-            self.symbol, ': price: {} ; c_min: {} ; c_max: {}\nPosition: {} ; Pnls: {}'.format(
-                round(price, 1),
+            self.symbol, '| price: {} | c_min: {} // c_max: {} // pos: {} // net pnl: {} // fees: {}\n'.format(
+                round(price, 2),
                 round(c_min, 2),
                 round(c_max, 2),
                 self.position,
-                round(sum(self.pnl), 4)
+                round(sum(self.pnl) - sum(self.fees), 4),
+                round(sum(self.fees), 4)
             )
         )

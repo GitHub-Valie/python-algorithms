@@ -14,7 +14,8 @@ for asset in portfolio:
     bots.append(asset)
     bots[-1]['bot'] = Algorithm(
         asset['pair'],
-        asset['interval']
+        asset['interval'],
+        asset['weight']
     )
 
     WSS_ENDPOINT = "{}@kline_{}/".format(

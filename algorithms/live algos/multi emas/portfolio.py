@@ -4,14 +4,17 @@
 portfolio = [
     {
         'pair' : 'BTCUSDT',
-        'interval' : '1m'
+        'interval' : '1m',
+        'weight' : 0.4
     },
     {
         'pair' : 'ETHUSDT',
-        'interval' : '1m'
+        'interval' : '1m',
+        'weight' : 0.3
     },
     {
         'pair' : 'XRPUSDT',
-        'interval' : '1m'
+        'interval' : '1m',
+        'weight' : 0.3
     }
 ]
